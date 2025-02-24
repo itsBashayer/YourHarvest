@@ -5,71 +5,66 @@
 //  Created by BASHAER AZIZ on 20/08/1446 AH.
 //
 import CloudKit
+import SwiftUI
 
-class CloudKitHelper {
-    static let shared = CloudKitHelper()
-    let database = CKContainer.default().privateCloudDatabase  // Using private database
+struct HistoryRecord: Identifiable {
+    var id: CKRecord.ID
+    var userName: String
+    var date: Date
+    var totalProducts: Int
+}
 
-    // Sign Up Function
-    func signUp(email: String, password: String, completion: @escaping (Bool, String?) -> Void) {
-        let predicate = NSPredicate(format: "email == %@", email)
-        let query = CKQuery(recordType: "User", predicate: predicate)
-
-        database.perform(query, inZoneWith: nil) { results, error in
+class CloudKitHelper: ObservableObject {
+    private let privateDatabase = CKContainer.default().privateCloudDatabase
+    @Published var historyRecords: [HistoryRecord] = []
+    
+    func saveHistory(userName: String, totalProducts: Int) {
+        let record = CKRecord(recordType: "Account") // Changed to "Users"
+        record["userName"] = userName
+        record["date"] = Date()
+        record["totalProducts"] = totalProducts
+        
+        privateDatabase.save(record) { _, error in
             DispatchQueue.main.async {
                 if let error = error {
-                    completion(false, error.localizedDescription)
-                    return
-                }
-                
-                if results?.isEmpty == false {
-                    completion(false, "Email already exists.")
-                    return
-                }
-
-                // Create a new user record
-                let record = CKRecord(recordType: "User")
-                record["email"] = email
-                record["password"] = password // Always hash passwords in real apps
-                record["createdAt"] = Date()
-
-                self.database.save(record) { _, error in
-                    DispatchQueue.main.async {
-                        if let error = error {
-                            completion(false, error.localizedDescription)
-                        } else {
-                            completion(true, nil)
-                        }
-                    }
+                    print("❌ Error saving record: \(error.localizedDescription)")
+                } else {
+                    print("✅ Successfully saved record!")
+                    self.fetchHistory()
                 }
             }
         }
     }
-
-    // Login Function
-    func login(email: String, password: String, completion: @escaping (Bool, String?) -> Void) {
-        let predicate = NSPredicate(format: "email == %@", email)
-        let query = CKQuery(recordType: "User", predicate: predicate)
-
-        database.perform(query, inZoneWith: nil) { results, error in
+    
+    func fetchHistory() {
+        let query = CKQuery(recordType: "Account", predicate: NSPredicate(value: true)) // Changed to "Users"
+        privateDatabase.perform(query, inZoneWith: nil) { records, error in
             DispatchQueue.main.async {
-                if let error = error {
-                    completion(false, error.localizedDescription)
-                    return
-                }
-                
-                guard let record = results?.first,
-                      let storedPassword = record["password"] as? String else {
-                    completion(false, "User not found.")
-                    return
-                }
-
-                if storedPassword == password { // Always hash and compare passwords in real apps
-                    completion(true, nil)
+                if let records = records {
+                    self.historyRecords = records.map { record in
+                        HistoryRecord(
+                            id: record.recordID,
+                            userName: record["userName"] as? String ?? "Unknown",
+                            date: record["date"] as? Date ?? Date(),
+                            totalProducts: record["totalProducts"] as? Int ?? 0
+                        )
+                    }
+                    print("✅ Successfully fetched \(records.count) records!")
                 } else {
-                    completion(false, "Incorrect password.")
+                    print("❌ Error fetching records: \(error?.localizedDescription ?? "Unknown error")")
                 }
             }
         }
+    }
+}
+
+// MARK: - Mock Data for SwiftUI Previews
+class MockCloudKitHelper: CloudKitHelper {
+    override init() {
+        super.init()
+        self.historyRecords = [
+            HistoryRecord(id: CKRecord.ID(recordName: "1"), userName: "Alice", date: Date(), totalProducts: 5),
+            HistoryRecord(id: CKRecord.ID(recordName: "2"), userName: "Bob", date: Date(), totalProducts: 12)
+        ]
     }
 }
