@@ -8,6 +8,7 @@
 import SwiftUI
 import CloudKit
 
+// MARK: - SwiftUI View
 struct ContentView: View {
     @StateObject private var cloudKitHelper = CloudKitHelper()
     
@@ -22,8 +23,14 @@ struct ContentView: View {
                             .font(.subheadline)
                         Text("Total Products: \(record.totalProducts)")
                             .font(.subheadline)
+                        if let userRef = record.userReference {
+                            Text("Linked User ID: \(userRef.recordID.recordName)")
+                                .font(.footnote)
+                                .foregroundColor(.gray)
+                        }
                     }
                 }
+                
                 Button("Add Test History") {
                     cloudKitHelper.saveHistory(userName: "Test User", totalProducts: Int.random(in: 1...100))
                 }
@@ -37,6 +44,7 @@ struct ContentView: View {
     }
 }
 
+// MARK: - Date Formatter
 private let dateFormatter: DateFormatter = {
     let formatter = DateFormatter()
     formatter.dateStyle = .medium
@@ -44,8 +52,9 @@ private let dateFormatter: DateFormatter = {
     return formatter
 }()
 
+// MARK: - Preview Provider
 struct HistoryContentView_Previews: PreviewProvider {
     static var previews: some View {
-        ContentView().environmentObject(MockCloudKitHelper()) // Using Mock Data for Previews
+        ContentView()
     }
 }
