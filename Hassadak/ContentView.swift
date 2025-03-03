@@ -19,6 +19,8 @@ struct ContentView: View {
                     VStack(alignment: .leading) {
                         Text("User: \(record.userName)")
                             .font(.headline)
+                        Text("Item: \(record.itemName)")  // ✅ Display itemName
+                            .font(.subheadline)
                         Text("Date: \(record.date, formatter: dateFormatter)")
                             .font(.subheadline)
                         Text("Total Products: \(record.totalProducts)")
@@ -32,7 +34,7 @@ struct ContentView: View {
                 }
                 
                 Button("Add Test History") {
-                    cloudKitHelper.saveHistory(userName: "Test User", totalProducts: Int.random(in: 1...100))
+                    cloudKitHelper.saveHistory(userName: "Test User", totalProducts: Int.random(in: 1...100), itemName: "Sample Item")
                 }
                 .padding()
             }
