@@ -1,9 +1,8 @@
 import SwiftUI
-import UIKit
+
 
 // MARK: - 1) HistoryView (and everything in it)
 
-/// A ButtonStyle that shows a faint gray border normally, and a green border (Color("green")) when selected.
 struct PersistentGreenBorderStyle: ButtonStyle {
     var isSelected: Bool
 
@@ -22,113 +21,102 @@ struct PersistentGreenBorderStyle: ButtonStyle {
 }
 
 struct HistoryView: View {
-    // States for controlling the popup, banner selection, etc.
     @State private var showPopup = false
     @State private var selectedItemName = ""
     @State private var selectedItemQTY = 0
     @State private var userName = "Younes123"
     @State private var showShareSheet = false
     @State private var pdfURL: URL?
-
-    // Controls the persistent green border on the banner
     @State private var isBannerSelected = false
-
-    // Current date for display
     private let currentDate = Date()
 
     var body: some View {
-        ZStack {
-            // Main content
-            VStack(alignment: .leading, spacing: 16) {
-                Text("History")
-                    .font(.largeTitle)
-                    .fontWeight(.bold)
-                    .foregroundColor(Color("green"))
-
-                Text(Formatter.date.string(from: currentDate))
-                    .font(.subheadline)
-                    .foregroundColor(.gray)
-
-                // Banner button container
+        GeometryReader { geometry in
+            ZStack {
                 VStack(alignment: .leading, spacing: 16) {
-                    Button {
-                        // On tap, set states and show the popup
-                        selectedItemName = "Tomato"
-                        selectedItemQTY = 60
-                        isBannerSelected = true
-                        showPopup = true
-                    } label: {
-                        HStack(spacing: 16) {
-                            Image("bannerimage")
-                                .resizable()
-                                .aspectRatio(contentMode: .fit)
-                                .frame(width: 56, height: 56)
+                    Text("History")
+                        .font(.largeTitle)
+                        .fontWeight(.bold)
+                        .foregroundColor(Color("green"))
 
-                            Text("Today's Tomato")
-                                .font(.system(size: 18, weight: .bold))
-                                .foregroundColor(.primary)
-                                .lineLimit(1)
+                    Text(Formatter.date.string(from: currentDate))
+                        .font(.subheadline)
+                        .foregroundColor(.gray)
 
-                            Spacer()
+                    VStack(alignment: .leading, spacing: 16) {
+                        Button {
+                            selectedItemName = "Tomato"
+                            selectedItemQTY = 60
+                            isBannerSelected = true
+                            showPopup = true
+                        } label: {
+                            HStack(spacing: 16) {
+                                Image("bannerimage")
+                                    .resizable()
+                                    .aspectRatio(contentMode: .fit)
+                                    .frame(width: min(geometry.size.width * 0.15, 56), height: min(geometry.size.width * 0.15, 56))
 
-                            Text("60 pieces")
-                                .font(.headline)
-                                .foregroundColor(Color("green"))
-                                .lineLimit(1)
+                                Text("Today's Tomato")
+                                    .font(.system(size: 18, weight: .bold))
+                                    .foregroundColor(.primary)
+                                    .lineLimit(1)
+
+                                Spacer()
+
+                                Text("60 pieces")
+                                    .font(.headline)
+                                    .foregroundColor(Color("green"))
+                                    .lineLimit(1)
+                            }
+                            .padding(.vertical, 0)
+                            .padding(.horizontal, 0)
+                            .frame(maxWidth: .infinity)
                         }
-                        .padding(.vertical, 0)
-                        .padding(.horizontal, 0)
-                        .frame(maxWidth: .infinity)
-                    }
-                    .buttonStyle(PersistentGreenBorderStyle(isSelected: isBannerSelected))
+                        .buttonStyle(PersistentGreenBorderStyle(isSelected: isBannerSelected))
 
-                    // Push the banner up
+                        Spacer()
+                    }
+
                     Spacer()
                 }
-
-                Spacer()
-            }
-            .padding()
-            // If the popup closes, reset the banner selection
-            .onChange(of: showPopup) { newValue in
-                if !newValue {
-                    isBannerSelected = false
-                }
-            }
-
-            // The popup overlay
-            if showPopup {
-                // Dim background
-                Color.black.opacity(0.4)
-                    .edgesIgnoringSafeArea(.all)
-                    .onTapGesture {
-                        showPopup = false
+                .padding(geometry.size.width * 0.05)
+                .onChange(of: showPopup) { newValue in
+                    if !newValue {
+                        isBannerSelected = false
                     }
-
-                VStack(spacing: 16) {
-                    // Show the cutout card
-                    CutoutReportCard(
-                        userName: userName,
-                        itemName: selectedItemName,
-                        itemQTY: selectedItemQTY,
-                        date: currentDate,
-                        showShape: true
-                    )
-
-                    Button("Share") {
-                        shareReportAsPDF()
-                    }
-                    .font(.headline)
-                    .foregroundColor(.white)
-                    .frame(height: 56)
-                    .frame(maxWidth: 350)
-                    .background(Color("green"))
-                    .cornerRadius(12)
                 }
-                .padding()
+
+                if showPopup {
+                    Color.black.opacity(0.4)
+                        .edgesIgnoringSafeArea(.all)
+                        .onTapGesture {
+                            showPopup = false
+                        }
+
+                    VStack(spacing: 16) {
+                        CutoutReportCard(
+                            userName: userName,
+                            itemName: selectedItemName,
+                            itemQTY: selectedItemQTY,
+                            date: currentDate,
+                            showShape: true,
+                            geometry: geometry
+                        )
+
+                        Button("Share") {
+                            shareReportAsPDF(geometry: geometry)
+                        }
+                        .font(.headline)
+                        .foregroundColor(.white)
+                        .frame(height: 56)
+                        .frame(maxWidth: geometry.size.width * 0.8)
+                        .background(Color("green"))
+                        .cornerRadius(12)
+                    }
+                    .padding(geometry.size.width * 0.05)
+                }
             }
         }
-        // Show the share sheet for the PDF
         .sheet(isPresented: $showShareSheet) {
             if let pdfURL = pdfURL {
                 ActivityViewController(activityItems: [pdfURL])
@@ -138,18 +126,17 @@ struct HistoryView: View {
         }
     }
 
-    // Generate and share a PDF
-    private func shareReportAsPDF() {
-        // We pass showShape = false to remove the cutout shape in the PDF
+    private func shareReportAsPDF(geometry: GeometryProxy) {
         let cardView = CutoutReportCard(
             userName: userName,
             itemName: selectedItemName,
             itemQTY: selectedItemQTY,
             date: currentDate,
-            showShape: false
+            showShape: false,
+            geometry: geometry
         )
 
-        let pdfData = renderViewAsPDF(cardView)
+        let pdfData = renderViewAsPDF(cardView, size: CGSize(width: geometry.size.width * 0.8, height: geometry.size.height * 0.6))
         let tempURL = FileManager.default.temporaryDirectory.appendingPathComponent("Report.pdf")
 
         do {
@@ -161,11 +148,9 @@ struct HistoryView: View {
         }
     }
 
-    // Renders any SwiftUI view as PDF data
-    private func renderViewAsPDF<Content: View>(_ view: Content) -> Data {
-        let targetSize = CGSize(width: 350, height: 400)
+    private func renderViewAsPDF<Content: View>(_ view: Content, size: CGSize) -> Data {
         let controller = UIHostingController(rootView: view)
-        controller.view.frame = CGRect(origin: .zero, size: targetSize)
+        controller.view.frame = CGRect(origin: .zero, size: size)
         controller.view.layoutIfNeeded()
         controller.view.backgroundColor = .white
         controller.overrideUserInterfaceStyle = .light
@@ -180,7 +165,6 @@ struct HistoryView: View {
 
 // MARK: - 2) Report Card
 
-/// A custom shape with a circular cutout at the top.
 struct CircleCutoutShape: Shape {
     var cornerRadius: CGFloat = 20
     var holeRadius: CGFloat = 20
@@ -191,10 +175,7 @@ struct CircleCutoutShape: Shape {
         let h = rect.height
         let midX = rect.midX
 
-        // Move to top-left corner
         path.move(to: CGPoint(x: 0, y: cornerRadius))
-
-        // Top-left corner arc
         path.addArc(
             center: CGPoint(x: cornerRadius, y: cornerRadius),
             radius: cornerRadius,
@@ -202,11 +183,7 @@ struct CircleCutoutShape: Shape {
             endAngle: .degrees(270),
             clockwise: false
         )
-
-        // Up to left edge of hole
         path.addLine(to: CGPoint(x: midX - holeRadius, y: 0))
-
-        // Inward hole
         path.addArc(
             center: CGPoint(x: midX, y: 0),
             radius: holeRadius,
@@ -214,8 +191,6 @@ struct CircleCutoutShape: Shape {
             endAngle: .degrees(0),
             clockwise: true
         )
-
-        // Top-right corner arc
         path.addLine(to: CGPoint(x: w - cornerRadius, y: 0))
         path.addArc(
             center: CGPoint(x: w - cornerRadius, y: cornerRadius),
@@ -224,8 +199,6 @@ struct CircleCutoutShape: Shape {
             endAngle: .degrees(360),
             clockwise: false
         )
-
-        // Right edge
         path.addLine(to: CGPoint(x: w, y: h - cornerRadius))
         path.addArc(
             center: CGPoint(x: w - cornerRadius, y: h - cornerRadius),
@@ -234,8 +207,6 @@ struct CircleCutoutShape: Shape {
             endAngle: .degrees(90),
             clockwise: false
         )
-
-        // Bottom edge
         path.addLine(to: CGPoint(x: cornerRadius, y: h))
         path.addArc(
             center: CGPoint(x: cornerRadius, y: h - cornerRadius),
@@ -244,20 +215,18 @@ struct CircleCutoutShape: Shape {
             endAngle: .degrees(180),
             clockwise: false
         )
-
-        // Close
         path.addLine(to: CGPoint(x: 0, y: cornerRadius))
         return path
     }
 }
 
-/// The card showing "Report" info, optionally with a circular top cutout.
 struct CutoutReportCard: View {
     var userName: String
     var itemName: String
     var itemQTY: Int
     var date: Date
     var showShape: Bool = true
+    var geometry: GeometryProxy
 
     private let dateFormatter: DateFormatter = {
         let df = DateFormatter()
@@ -271,12 +240,12 @@ struct CutoutReportCard: View {
                 CircleCutoutShape()
                     .fill(style: FillStyle(eoFill: true))
                     .foregroundColor(Color(UIColor.systemBackground))
-                    .frame(width: 350, height: 400)
+                    .frame(width: geometry.size.width * 0.8, height: geometry.size.height * 0.6)
                     .shadow(color: Color.primary.opacity(0.3), radius: 8, x: 0, y: 2)
             } else {
                 Rectangle()
                     .fill(Color.white)
-                    .frame(width: 350, height: 400)
+                    .frame(width: geometry.size.width * 0.8, height: geometry.size.height * 0.6)
             }
 
             VStack(alignment: .leading, spacing: 20) {
@@ -328,30 +297,29 @@ struct CutoutReportCard: View {
 
                 Spacer()
             }
-            .padding(.top, 40)
-            .padding(.horizontal, 24)
-            .padding(.bottom, 16)
+            .padding(.top, geometry.size.height * 0.06)
+            .padding(.horizontal, geometry.size.width * 0.05)
+            .padding(.bottom, geometry.size.height * 0.02)
             
             VStack {
-                            Spacer()
-                            HStack {
-                                Spacer()
-                                Image("logo")
-                                    .resizable()
-                                    .scaledToFit()
-                                    .frame(width: 40, height: 40)
-                                    .padding([.trailing, .bottom], 20)
-                                    .padding([.leading, .bottom], 20)
-                            }
-                        }
+                Spacer()
+                HStack {
+                    Spacer()
+                    Image("logo")
+                        .resizable()
+                        .scaledToFit()
+                        .frame(width: min(geometry.size.width * 0.1, 40), height: min(geometry.size.width * 0.1, 40))
+                        .padding([.trailing, .bottom], geometry.size.width * 0.05)
+                        .padding([.leading, .bottom], geometry.size.width * 0.05)
+                }
+            }
         }
-        .frame(width: 350, height: 400)
+        .frame(width: geometry.size.width * 0.8, height: geometry.size.height * 0.6)
     }
 }
 
 // MARK: - 3) Sharing Part
 
-/// A basic date formatter used by the HistoryView
 struct Formatter {
     static let date: DateFormatter = {
         let formatter = DateFormatter()
@@ -360,7 +328,6 @@ struct Formatter {
     }()
 }
 
-/// A simple UIActivityViewController for sharing items (like PDFs).
 struct ActivityViewController: UIViewControllerRepresentable {
     let activityItems: [Any]
     let applicationActivities: [UIActivity]? = nil
