@@ -1,38 +1,52 @@
 
 import SwiftUI
 
+import SwiftUI
+
 struct OnboardingView: View {
     @State private var selection = 0
     @State private var isActive = false
-    @State private var userName: String = "" // ✅ Store user name input
-
+    @State private var userName: String = ""
+    
+    
+    @AppStorage("hasSeenOnboarding") private var hasSeenOnboarding: Bool = false
+    
     var body: some View {
-        NavigationStack {
-            ZStack {
-                Color.black.ignoresSafeArea()
-                
-                TabView(selection: $selection) {
-                    ForEach(0..<3, id: \.self) { index in
-                        OnboardingScreen(
-                            imageName: "onboarding\(index + 1)",
-                            description: index == 2 ? "Please add your name" : "",
-                            selection: $selection,
-                            isActive: $isActive,
-                            userName: $userName // ✅ Pass `@Binding` userName
-                        )
-                        .tag(index)
+        if hasSeenOnboarding {
+            ContentView(userName: $userName)
+                .navigationBarBackButtonHidden(true)
+        } else {
+            NavigationStack {
+                ZStack {
+                    Color.black.ignoresSafeArea()
+                    
+                    TabView(selection: $selection) {
+                        ForEach(0..<3, id: \.self) { index in
+                            OnboardingScreen(
+                                imageName: "onboarding\(index + 1)",
+                                description: index == 2 ? "Please add your name" : "",
+                                selection: $selection,
+                                isActive: $isActive,
+                                userName: $userName
+                            )
+                            .tag(index)
+                        }
                     }
+                    .tabViewStyle(PageTabViewStyle())
+                    .ignoresSafeArea()
                 }
-                .tabViewStyle(PageTabViewStyle())
-                .ignoresSafeArea()
-            }
-            .navigationDestination(isPresented: $isActive) {
-                ContentView(userName: $userName) // ✅ Pass userName to ContentView
-                    .navigationBarBackButtonHidden(true)
+                .navigationDestination(isPresented: $isActive) {
+                    ContentView(userName: $userName)
+                        .navigationBarBackButtonHidden(true)
+                        .onAppear {
+                            hasSeenOnboarding = true 
+                        }
+                }
             }
         }
     }
 }
+
 
 struct OnboardingScreen: View {
     var imageName: String
@@ -82,7 +96,7 @@ struct OnboardingScreen: View {
                     }) {
                         Text("Start")
                             .fontWeight(.bold)
-                            .foregroundColor(Color("Green"))
+                            .foregroundColor(Color("green"))
                             .frame(width: 260, height: 46)
                             .background(userName.isEmpty ? Color.white : Color.white)
                             .cornerRadius(12)

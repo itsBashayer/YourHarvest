@@ -32,7 +32,8 @@ struct Splashscreen: View {
                 navigateToOnboarding()
             }
             .navigationDestination(isPresented: $isActive) {
-                OnboardingView()
+                OnboardingView()  
+                    .navigationBarBackButtonHidden(true)
             }
         }
     }
@@ -61,9 +62,6 @@ struct Splashscreen: View {
         }
     }
 }
-
-
-    
 
 
 #Preview {

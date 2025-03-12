@@ -77,7 +77,7 @@ struct InstructionBox: View {
             Button("Done") {
                 showInstructions = false
             }
-            .foregroundColor(Color("Green"))
+            .foregroundColor(Color("green"))
             .padding(.top, 4)
         }
         .padding()
@@ -157,7 +157,7 @@ struct NavBarItem: View {
             }) {
                 ZStack {
                     Circle()
-                        .fill(isSelected && text == "Counter" ? Color("Green") : Color(.systemGray5))
+                        .fill(isSelected && text == "Counter" ? Color("green") : Color(.systemGray5))
                         .frame(
                             width: text == "Counter" ? 90.63 : 71.84,
                             height: text == "Counter" ? 90.85 : 73.34
@@ -176,7 +176,7 @@ struct NavBarItem: View {
 
             Text(text)
                 .font(.system(size: 14))
-                .foregroundColor(isSelected ? Color("Green") : .gray)
+                .foregroundColor(isSelected ? Color("green") : .gray)
         }
         .padding(.horizontal, 22)
     }

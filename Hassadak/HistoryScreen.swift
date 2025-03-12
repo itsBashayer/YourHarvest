@@ -16,7 +16,7 @@ struct HistoryView: View {
                     Text("History")
                         .font(.largeTitle)
                         .fontWeight(.bold)
-                        .foregroundColor(Color("Green"))
+                        .foregroundColor(Color("green"))
 
                     // ✅ Displays the capture date
                     Text(date) // ✅ Updated variable name
@@ -44,7 +44,7 @@ struct HistoryView: View {
 
                                 Text("\(totalProducts) pieces") // ✅ Updated variable name
                                     .font(.headline)
-                                    .foregroundColor(Color("Green"))
+                                    .foregroundColor(Color("green"))
                                     .lineLimit(1)
                             }
                             .padding(.vertical, 0)
@@ -90,7 +90,7 @@ struct HistoryView: View {
                                 .foregroundColor(.white)
                                 .frame(height: 56)
                                 .frame(maxWidth: geometry.size.width * 0.8)
-                                .background(Color("Green"))
+                                .background(Color("green"))
                                 .cornerRadius(12)
                             }
                         } else {
