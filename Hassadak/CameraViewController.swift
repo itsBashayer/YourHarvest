@@ -1,4 +1,3 @@
-
 import SwiftUI
 import AVFoundation
 import Vision
@@ -48,15 +47,23 @@ class CameraViewController: UIViewController {
     
 
     private func setupOverlayUI() {
-            let hostingController = UIHostingController(rootView: CamButton(
-                userName: userName, // ✅ Pass userName to CamButton
-                capturePhotoAction: capturePhoto
-            ))
-            hostingController.view.frame = view.bounds
-            hostingController.view.backgroundColor = .clear
-            view.addSubview(hostingController.view)
-            hostingController.didMove(toParent: self)
-        }
+        let cloudKitHelper = CloudKitHelper() // ✅ Ensure CloudKitHelper is initialized
+
+        let hostingController = UIHostingController(rootView: CamButton(
+            userName: userName, // ✅ Pass userName
+            capturePhotoAction: capturePhoto,
+            cloudKitHelper: cloudKitHelper // ✅ Pass CloudKitHelper instance
+        ))
+
+        hostingController.view.frame = view.bounds
+
+        // ✅ Explicitly set the background color correctly
+        hostingController.view.backgroundColor = UIColor.clear
+
+        view.addSubview(hostingController.view)
+        hostingController.didMove(toParent: self)
+    }
+
     
     func capturePhoto() {
         guard !isPhotoCaptured else { return }
@@ -92,14 +99,15 @@ class CameraViewController: UIViewController {
         saveButton.layer.borderColor = UIColor.green.cgColor
         saveButton.addTarget(self, action: #selector(saveImage), for: .touchUpInside)
 
-        retakeButton.removeFromSuperview()
-        saveButton.removeFromSuperview()
-
-        view.addSubview(retakeButton)
-        view.addSubview(saveButton)
-
-        view.layoutIfNeeded()
+        // ✅ Bring the buttons to the front
+        DispatchQueue.main.async {
+            self.view.addSubview(self.retakeButton)
+            self.view.addSubview(self.saveButton)
+            self.view.bringSubviewToFront(self.retakeButton)
+            self.view.bringSubviewToFront(self.saveButton)
+        }
     }
+
 
     
     @objc private func retakeCapture() {
@@ -112,30 +120,66 @@ class CameraViewController: UIViewController {
     }
 
     
+//    @objc private func saveImage() {
+//        guard let firstDetectedObject = objectCounts.first else {
+//            print("❌ No objects detected to save.")
+//            return
+//        }
+//
+//        let itemName = firstDetectedObject.key // ✅ Renamed from selectedItemName
+//        let totalProducts = firstDetectedObject.value // ✅ Renamed from selectedItemQTY
+//        let date = DateFormatter.localizedString(from: Date(), dateStyle: .medium, timeStyle: .short) // ✅ Renamed from captureDate
+//
+//        print("📸 Saving: \(itemName) - Count: \(totalProducts) - Date: \(date) - User: \(userName)")
+//
+//                    // ✅ Navigate to HistoryView while passing the data
+//                    DispatchQueue.main.async {
+//                        let historyView = UIHostingController(rootView: HistoryView(
+//                            itemName: itemName, // ✅ Updated variable name
+//                            totalProducts: totalProducts, // ✅ Updated variable name
+//                            date: date, // ✅ Updated variable name
+//                            userName: self.userName // ✅ Pass userName correctly
+//                        ))
+//                        self.present(historyView, animated: true, completion: nil)
+//                    }
+//                }
     @objc private func saveImage() {
-            guard let firstDetectedObject = objectCounts.first else {
-                print("❌ No objects detected to save.")
-                return
-            }
-
-            let itemName = firstDetectedObject.key // ✅ Renamed from selectedItemName
-            let totalProducts = firstDetectedObject.value // ✅ Renamed from selectedItemQTY
-            let date = DateFormatter.localizedString(from: Date(), dateStyle: .medium, timeStyle: .short) // ✅ Renamed from captureDate
-
-            print("📸 Saving: \(itemName) - Count: \(totalProducts) - Date: \(date) - User: \(userName)")
-
-            // ✅ Navigate to HistoryView while passing the data
-            DispatchQueue.main.async {
-                let historyView = UIHostingController(rootView: HistoryView(
-                    itemName: itemName, // ✅ Updated variable name
-                    totalProducts: totalProducts, // ✅ Updated variable name
-                    date: date, // ✅ Updated variable name
-                    userName: self.userName // ✅ Pass userName correctly
-                ))
-                self.present(historyView, animated: true, completion: nil)
-            }
+        guard let firstDetectedObject = objectCounts.first else {
+            print("❌ No objects detected to save.")
+            return
         }
-    private func updateCapturedImage(_ image: UIImage) {
+
+        let itemName = firstDetectedObject.key
+        let totalProducts = firstDetectedObject.value
+        let date = DateFormatter.localizedString(from: Date(), dateStyle: .medium, timeStyle: .short)
+
+        print("📸 Saving: \(itemName) - Count: \(totalProducts) - Date: \(date) - User: \(userName)")
+
+        // ✅ Save to CloudKit
+        let cloudKitHelper = CloudKitHelper()
+        cloudKitHelper.saveHistory(userName: userName, totalProducts: totalProducts, itemName: itemName)
+
+        // ✅ Notify HistoryView to refresh
+        NotificationCenter.default.post(name: NSNotification.Name("HistoryUpdated"), object: nil)
+
+        // ✅ Show "Saved!" confirmation on screen
+        let alert = UIAlertController(title: "Saved!", message: "\(itemName) saved successfully.", preferredStyle: .alert)
+        alert.addAction(UIAlertAction(title: "OK", style: .default))
+        
+        DispatchQueue.main.async {
+            self.present(alert, animated: true)
+        }
+
+        // ✅ Close CameraViewController after confirmation
+        DispatchQueue.main.asyncAfter(deadline: .now() + 1.5) {
+            self.dismiss(animated: true)
+        }
+    }
+
+
+
+        
+        private func updateCapturedImage(_ image: UIImage) {
         self.detectionOverlay.sublayers?.removeAll()
         processImage(image)
     }

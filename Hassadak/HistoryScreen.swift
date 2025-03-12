@@ -1,13 +1,10 @@
-
 import SwiftUI
+import CloudKit
 
 struct HistoryView: View {
+    @ObservedObject var cloudKitHelper: CloudKitHelper // ✅ Ensures CloudKitHelper is correctly used
     @State private var showPopup = false
-    @State private var pdfURL: URL?
-    var itemName: String // ✅ Renamed from selectedItemName
-    var totalProducts: Int // ✅ Renamed from selectedItemQTY
-    var date: String // ✅ Renamed from captureDate
-    var userName: String // ✅ Accept userName
+    @State private var pdfURL: URL? // ✅ Stores generated PDF file
 
     var body: some View {
         GeometryReader { geometry in
@@ -18,50 +15,67 @@ struct HistoryView: View {
                         .fontWeight(.bold)
                         .foregroundColor(Color("green"))
 
-                    // ✅ Displays the capture date
-                    Text(date) // ✅ Updated variable name
-                        .font(.subheadline)
-                        .foregroundColor(.gray)
+                    // ✅ ScrollView added to allow scrolling
+                    ScrollView {
+                        VStack(alignment: .leading, spacing: 16) {
+                            if cloudKitHelper.historyRecords.isEmpty {
+                                Text("No history available.")
+                                    .foregroundColor(.gray)
+                            } else {
+                                ForEach(cloudKitHelper.historyRecords) { record in
+                                    Button {
+                                        generatePDF(record: record, geometry: geometry) // ✅ Generate PDF when clicking
+                                        showPopup = true
+                                    } label: {
+                                        HStack(spacing: 16) {
+                                            Image("bannerimage")
+                                                .resizable()
+                                                .aspectRatio(contentMode: .fit)
+                                                .frame(width: min(geometry.size.width * 0.15, 56), height: min(geometry.size.width * 0.15, 56))
 
-                    VStack(alignment: .leading, spacing: 16) {
-                        Button {
-                            showPopup = true
-                        } label: {
-                            HStack(spacing: 16) {
-                                Image("bannerimage")
-                                    .resizable()
-                                    .aspectRatio(contentMode: .fit)
-                                    .frame(width: min(geometry.size.width * 0.15, 56), height: min(geometry.size.width * 0.15, 56))
+                                            VStack(alignment: .leading) {
+                                                Text(record.itemName)
+                                                    .font(.system(size: 18, weight: .bold))
+                                                    .foregroundColor(.primary)
+                                                    .lineLimit(1)
 
-                                VStack(alignment: .leading) {
-                                    Text(itemName.isEmpty ? "" : itemName) // ✅ Updated variable name
-                                        .font(.system(size: 18, weight: .bold))
-                                        .foregroundColor(.primary)
-                                        .lineLimit(1)
+                                                // ✅ Show correct date for each record
+                                                Text(formatDate(record.date))
+                                                    .font(.subheadline)
+                                                    .foregroundColor(.gray)
+                                            }
+
+                                            Spacer()
+
+                                            Text("\(record.totalProducts) pieces")
+                                                .font(.headline)
+                                                .foregroundColor(Color("green"))
+                                                .lineLimit(1)
+                                        }
+                                        .padding(.vertical, 0)
+                                        .padding(.horizontal, 0)
+                                        .frame(maxWidth: .infinity)
+                                    }
                                 }
-
-                                Spacer()
-
-                                Text("\(totalProducts) pieces") // ✅ Updated variable name
-                                    .font(.headline)
-                                    .foregroundColor(Color("green"))
-                                    .lineLimit(1)
                             }
-                            .padding(.vertical, 0)
-                            .padding(.horizontal, 0)
-                            .frame(maxWidth: .infinity)
                         }
-
-                        Spacer()
                     }
-
-                    Spacer()
                 }
                 .padding(geometry.size.width * 0.05)
                 .onAppear {
-                    generatePDF(geometry: geometry) // ✅ Automatically generate PDF on load
+                    print("📡 HistoryView appeared, fetching history...")
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) { // ✅ Ensure history is fully loaded before showing
+                        cloudKitHelper.fetchHistory()
+                    }
+                }
+                .onReceive(NotificationCenter.default.publisher(for: NSNotification.Name("HistoryUpdated"))) { _ in
+                    print("🔄 History updated, refreshing...")
+                    DispatchQueue.main.async {
+                        cloudKitHelper.fetchHistory()
+                    }
                 }
 
+                // ✅ Popup for viewing & sharing PDF
                 if showPopup {
                     Color.black.opacity(0.4)
                         .edgesIgnoringSafeArea(.all)
@@ -70,21 +84,24 @@ struct HistoryView: View {
                         }
 
                     VStack(spacing: 16) {
-                        // ✅ Pass `userName` to CutoutReportCard
-                        CutoutReportCard(
-                            itemName: itemName, // ✅ Updated variable name
-                            totalProducts: totalProducts, // ✅ Updated variable name
-                            date: date, // ✅ Updated variable name
-                            userName: userName, // ✅ Pass userName
-                            showShape: true,
-                            geometry: geometry
-                        )
+                        // ✅ Display the Report Card
+                        if let record = cloudKitHelper.historyRecords.first {
+                            CutoutReportCard(
+                                itemName: record.itemName,
+                                totalProducts: record.totalProducts,
+                                date: formatDate(record.date),
+                                userName: record.userName,
+                                showShape: true,
+                                geometry: geometry
+                            )
+                        }
 
+                        // ✅ Share Button (Positioned Below the Popup)
                         if let pdfURL = pdfURL {
                             ShareLink(item: pdfURL, preview: SharePreview("Report", image: Image(systemName: "doc"))) {
                                 HStack {
                                     Image(systemName: "square.and.arrow.up")
-                                    Text("Share Report")
+                                    Text("Export Report")
                                 }
                                 .font(.headline)
                                 .foregroundColor(.white)
@@ -99,19 +116,31 @@ struct HistoryView: View {
                                 .foregroundColor(.gray)
                         }
                     }
-                    .padding(geometry.size.width * 0.05)
+                    .padding()
+                    .cornerRadius(12)
+                    .shadow(radius: 10)
+                    .frame(width: geometry.size.width * 0.8)
+                    .position(x: geometry.size.width / 2, y: geometry.size.height / 2) // ✅ Keeps popup centered
                 }
             }
         }
     }
 
-    // ✅ Generates and saves the PDF automatically
-    private func generatePDF(geometry: GeometryProxy) {
+    // ✅ Format the date correctly
+    private func formatDate(_ date: Date) -> String {
+        let formatter = DateFormatter()
+        formatter.dateStyle = .medium
+        formatter.timeStyle = .short
+        return formatter.string(from: date)
+    }
+
+    // ✅ Generate PDF for a selected record
+    private func generatePDF(record: HistoryRecord, geometry: GeometryProxy) {
         let cardView = CutoutReportCard(
-            itemName: itemName, // ✅ Updated variable name
-            totalProducts: totalProducts, // ✅ Updated variable name
-            date: date, // ✅ Updated variable name
-            userName: userName, // ✅ Added userName
+            itemName: record.itemName,
+            totalProducts: record.totalProducts,
+            date: formatDate(record.date),
+            userName: record.userName,
             showShape: false,
             geometry: geometry
         )
@@ -125,10 +154,11 @@ struct HistoryView: View {
                 self.pdfURL = tempURL // ✅ Updates the PDF URL once generated
             }
         } catch {
-            print("Error writing PDF data: \(error)")
+            print("❌ Error writing PDF data: \(error)")
         }
     }
 
+    // ✅ Render SwiftUI view as PDF
     private func renderViewAsPDF<Content: View>(_ view: Content, size: CGSize) -> Data {
         let controller = UIHostingController(rootView: view)
         controller.view.frame = CGRect(origin: .zero, size: size)
@@ -147,6 +177,6 @@ struct HistoryView: View {
 // ✅ Keeps preview functionality without passing arguments
 struct HistoryView_Previews: PreviewProvider {
     static var previews: some View {
-        HistoryView(itemName: "", totalProducts: 0, date: "", userName: "Preview User") // ✅ Updated variable names
+        HistoryView(cloudKitHelper: CloudKitHelper()) // ✅ Fixed missing CloudKitHelper argument
     }
 }
