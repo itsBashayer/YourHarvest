@@ -52,7 +52,9 @@ struct CamButton: View {
                         Button(action: { showHistoryView = false }) {
                             HStack {
                                 Image(systemName: "chevron.left")
+                                    .foregroundColor(Color("green"))
                                 Text("Back")
+                                    .foregroundColor(Color("green"))
                             }
                         }
                     }
