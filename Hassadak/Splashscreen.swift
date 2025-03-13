@@ -7,20 +7,19 @@ struct Splashscreen: View {
     var body: some View {
         NavigationStack {
             ZStack {
-                Color.white
-                    .edgesIgnoringSafeArea(.all)
-                
+                Color("green")
+                                   .edgesIgnoringSafeArea(.all)
                 VStack {
-                    Image("logo")
+                    Image("Logo3")
                         .resizable()
-                        .frame(width: 200, height: 230)
+                        .frame(width: 200, height: 200)
                         .scaledToFit()
                     
                     Image("line")
                         .resizable()
-                        .padding(.leading, 7)
+                        .padding(.leading, 2)
                         .padding(.top, -160)
-                        .frame(width: 230, height: 20)
+                        .frame(width: 260, height: 20)
                         .offset(y: linerOffset)
                         .onAppear {
                             startAnimation()
