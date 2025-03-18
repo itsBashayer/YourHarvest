@@ -171,6 +171,7 @@ class CameraViewController: UIViewController {
             preferredStyle: .alert
         )
 
+
         alert.addAction(UIAlertAction(
             title: NSLocalizedString("OK", comment: "Alert button to confirm action"),
             style: .default

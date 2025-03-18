@@ -2,12 +2,37 @@
   "sourceLanguage" : "en",
   "strings" : {
     "%@ saved successfully." : {
-      "comment" : "Alert message when an item is saved"
+      "comment" : "Alert message when an item is saved",
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "تم حفظ %@ بنجاح."
+          }
+        },
+        "hi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ सफलतापूर्वक सहेजा गया।"
+          }
+        }
+      }
     },
     "%lld" : {
 
     },
+    "%lld %@" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "%1$lld %2$@"
+          }
+        }
+      }
+    },
     "%lld pieces" : {
+      "extractionState" : "stale",
       "localizations" : {
         "ar" : {
           "stringUnit" : {
@@ -330,6 +355,9 @@
         }
       }
     },
+    "Key" : {
+      "extractionState" : "manual"
+    },
     "Lemon" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -363,6 +391,23 @@
         }
       }
     },
+    "NSCameraUsageDescription" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "يتطلب هذا التطبيق الوصول إلى الكاميرا لاكتشاف الكائنات في الوقت الفعلي"
+          }
+        },
+        "hi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "इस ऐप को वास्तविक समय में वस्तुओं का पता लगाने के लिए कैमरा एक्सेस की आवश्यकता है।"
+          }
+        }
+      }
+    },
     "Ok" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -381,7 +426,38 @@
       }
     },
     "OK" : {
-      "comment" : "Alert button to confirm action"
+      "comment" : "Alert button to confirm action",
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "تم"
+          }
+        },
+        "hi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ठीक है"
+          }
+        }
+      }
+    },
+    "pieces" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "حبة"
+          }
+        },
+        "hi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "टुकड़े"
+          }
+        }
+      }
     },
     "Please add your name" : {
       "extractionState" : "manual",
@@ -484,7 +560,21 @@
       }
     },
     "Saved!" : {
-      "comment" : "Alert title for successful save"
+      "comment" : "Alert title for successful save",
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "تم الحفظ!"
+          }
+        },
+        "hi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "सहेजा गया!"
+          }
+        }
+      }
     },
     "Start" : {
       "localizations" : {

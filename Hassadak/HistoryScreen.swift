@@ -47,7 +47,8 @@ struct HistoryView: View {
 
                                             Spacer()
 
-                                            Text("\(record.totalProducts) pieces")
+                                            Text("\(record.totalProducts) \(NSLocalizedString("pieces", comment: ""))")
+
                                                 .font(.headline)
                                                 .foregroundColor(Color("green"))
                                                 .lineLimit(1)
