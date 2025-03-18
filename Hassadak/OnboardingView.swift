@@ -1,13 +1,9 @@
-
-import SwiftUI
-
 import SwiftUI
 
 struct OnboardingView: View {
     @State private var selection = 0
     @State private var isActive = false
     @State private var userName: String = ""
-    
     
     @AppStorage("hasSeenOnboarding") private var hasSeenOnboarding: Bool = false
     
@@ -24,7 +20,7 @@ struct OnboardingView: View {
                         ForEach(0..<3, id: \.self) { index in
                             OnboardingScreen(
                                 imageName: "onboarding\(index + 1)",
-                                description: index == 2 ? "Please add your name" : "",
+                                description: index == 2 ? NSLocalizedString("Please add your name", comment: "") : "",
                                 selection: $selection,
                                 isActive: $isActive,
                                 userName: $userName
@@ -39,7 +35,7 @@ struct OnboardingView: View {
                     ContentView(userName: $userName)
                         .navigationBarBackButtonHidden(true)
                         .onAppear {
-                            hasSeenOnboarding = true 
+                            hasSeenOnboarding = true
                         }
                 }
             }
@@ -47,13 +43,12 @@ struct OnboardingView: View {
     }
 }
 
-
 struct OnboardingScreen: View {
     var imageName: String
     var description: String
     @Binding var selection: Int
     @Binding var isActive: Bool
-    @Binding var userName: String // ✅ Binding for userName
+    @Binding var userName: String
 
     var body: some View {
         ZStack {
@@ -73,7 +68,7 @@ struct OnboardingScreen: View {
                     .padding()
                 
                 if imageName == "onboarding3" {
-                    TextField("Enter your name", text: $userName)
+                    TextField(NSLocalizedString("Enter your name", comment: ""), text: $userName)
                         .font(.system(size: 16))
                         .padding(10)
                         .background(Color.white.opacity(0.8))
@@ -112,6 +107,7 @@ struct OnboardingScreen: View {
         .ignoresSafeArea()
     }
 }
+
 #Preview {
     OnboardingView()
 }

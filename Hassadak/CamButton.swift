@@ -73,10 +73,11 @@ struct CamButton: View {
         
         var body: some View {
             VStack(spacing: 12) {
-                InstructionRow(imageName: "adjust", text: "Adjust on wide view")
-                InstructionRow(imageName: "arrange", text: "Arrange vegetables neatly")
-                InstructionRow(imageName: "surface", text: "Use a flat surface")
-                InstructionRow(imageName: "light", text: "Ensure good lighting")
+                InstructionRow(imageName: "adjust", text: NSLocalizedString("Adjust on wide view", comment: "Instruction text"))
+                InstructionRow(imageName: "arrange", text: NSLocalizedString("Arrange vegetables neatly", comment: "Instruction text"))
+                InstructionRow(imageName: "surface", text: NSLocalizedString("Use a flat surface", comment: "Instruction text"))
+                InstructionRow(imageName: "light", text: NSLocalizedString("Ensure good lighting", comment: "Instruction text"))
+
                 
                 Divider()
                 
@@ -159,7 +160,8 @@ struct BottomNavBar: View {
     
     var body: some View {
         HStack {
-            NavBarItem(imageName: "history", text: "History", selectedNavItem: $selectedNavItem) {
+            NavBarItem(imageName: "history", text: NSLocalizedString("History", comment: "Navigation Bar Item"), selectedNavItem: $selectedNavItem)
+ {
                 
                 // ✅ Fetch the latest history data BEFORE navigating
                 cloudKitHelper.fetchHistory()
@@ -181,12 +183,16 @@ struct BottomNavBar: View {
                 }
             }
 
-            NavBarItem(imageName: "counter", text: "Counter", selectedNavItem: $selectedNavItem, action: {
+            NavBarItem(imageName: "count", text: NSLocalizedString("count", comment: "Navigation Bar Item"), selectedNavItem: $selectedNavItem, action: {
                 capturePhotoAction()
             })
+
+       
             
-            NavBarItem(imageName: "Instructions", text: "Instructions", selectedNavItem: $selectedNavItem) {
+            NavBarItem(imageName: "Instructions", text: NSLocalizedString("Instructions", comment: "Navigation Bar Item"), selectedNavItem: $selectedNavItem) {
                 showInstructions = true
+            
+
             }
         }
     }

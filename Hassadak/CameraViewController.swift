@@ -84,7 +84,8 @@ class CameraViewController: UIViewController {
         let buttonYPosition = view.bounds.maxY - 220
 
         retakeButton = UIButton(frame: CGRect(x: (view.bounds.width - totalWidth) / 2, y: buttonYPosition, width: buttonWidth, height: buttonHeight))
-        retakeButton.setTitle("Retake", for: .normal)
+        retakeButton.setTitle(NSLocalizedString("Retake", comment: "Button title for retaking a photo"), for: .normal)
+
         retakeButton.backgroundColor = UIColor.black.withAlphaComponent(0.6)
         retakeButton.layer.cornerRadius = 12
         retakeButton.layer.borderWidth = 2
@@ -92,7 +93,8 @@ class CameraViewController: UIViewController {
         retakeButton.addTarget(self, action: #selector(retakeCapture), for: .touchUpInside)
 
         saveButton = UIButton(frame: CGRect(x: retakeButton.frame.maxX + spacing, y: buttonYPosition, width: buttonWidth, height: buttonHeight))
-        saveButton.setTitle("Save", for: .normal)
+        saveButton.setTitle(NSLocalizedString("Save", comment: "Button title for saving data"), for: .normal)
+
         saveButton.backgroundColor = UIColor.black.withAlphaComponent(0.6)
         saveButton.layer.cornerRadius = 12
         saveButton.layer.borderWidth = 2
@@ -163,8 +165,17 @@ class CameraViewController: UIViewController {
         NotificationCenter.default.post(name: NSNotification.Name("HistoryUpdated"), object: nil)
 
         // ✅ Show "Saved!" confirmation on screen
-        let alert = UIAlertController(title: "Saved!", message: "\(itemName) saved successfully.", preferredStyle: .alert)
-        alert.addAction(UIAlertAction(title: "OK", style: .default))
+        let alert = UIAlertController(
+            title: NSLocalizedString("Saved!", comment: "Alert title for successful save"),
+            message: String(format: NSLocalizedString("%@ saved successfully.", comment: "Alert message when an item is saved"), itemName),
+            preferredStyle: .alert
+        )
+
+        alert.addAction(UIAlertAction(
+            title: NSLocalizedString("OK", comment: "Alert button to confirm action"),
+            style: .default
+        ))
+
         
         DispatchQueue.main.async {
             self.present(alert, animated: true)

@@ -1,6 +1,9 @@
 {
   "sourceLanguage" : "en",
   "strings" : {
+    "%@ saved successfully." : {
+      "comment" : "Alert message when an item is saved"
+    },
     "%lld" : {
 
     },
@@ -30,6 +33,23 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "चौड़े दृश्य के लिए फ्रेम समायोजित करें"
+          }
+        }
+      }
+    },
+    "Apple" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "تفاح"
+          }
+        },
+        "hi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "सेब"
           }
         }
       }
@@ -96,6 +116,23 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "गिनती"
+          }
+        }
+      }
+    },
+    "Cucumber" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "خيار"
+          }
+        },
+        "hi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "खीरा"
           }
         }
       }
@@ -293,6 +330,23 @@
         }
       }
     },
+    "Lemon" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ليمون"
+          }
+        },
+        "hi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "नींबू "
+          }
+        }
+      }
+    },
     "No history available." : {
       "localizations" : {
         "ar" : {
@@ -322,6 +376,26 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "ठीक है"
+          }
+        }
+      }
+    },
+    "OK" : {
+      "comment" : "Alert button to confirm action"
+    },
+    "Please add your name" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "فضلاً أدخل اسمك"
+          }
+        },
+        "hi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "कृपया अपना नाम दर्ज करें।"
           }
         }
       }
@@ -409,6 +483,9 @@
         }
       }
     },
+    "Saved!" : {
+      "comment" : "Alert title for successful save"
+    },
     "Start" : {
       "localizations" : {
         "ar" : {
@@ -421,6 +498,23 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "शुरू करें"
+          }
+        }
+      }
+    },
+    "Tomato" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "طماطم"
+          }
+        },
+        "hi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "टमाटर"
           }
         }
       }
