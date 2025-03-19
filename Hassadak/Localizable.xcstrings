@@ -592,6 +592,23 @@
         }
       }
     },
+    "This app requires camera access to detect objects in real-time." : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "يتطلب هذا التطبيق الوصول إلى الكاميرا لاكتشاف الكائنات في الوقت الفعلي"
+          }
+        },
+        "hi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "इस ऐप को वास्तविक समय में वस्तुओं का पता लगाने के लिए कैमरा एक्सेस की आवश्यकता है।"
+          }
+        }
+      }
+    },
     "Tomato" : {
       "extractionState" : "manual",
       "localizations" : {

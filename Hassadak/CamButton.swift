@@ -1,6 +1,6 @@
 import SwiftUI
 import AVFoundation
-
+let TextColorin = Color("TextColorin")
 struct CamButton: View {
     @State private var showInstructions = true
     @State private var selectedNavItem: String? = nil
@@ -68,85 +68,53 @@ struct CamButton: View {
 }
     
     
-    struct InstructionBox: View {
-        @Binding var showInstructions: Bool
-        
-        var body: some View {
-            VStack(spacing: 12) {
-                InstructionRow(imageName: "adjust", text: NSLocalizedString("Adjust on wide view", comment: "Instruction text"))
-                InstructionRow(imageName: "arrange", text: NSLocalizedString("Arrange vegetables neatly", comment: "Instruction text"))
-                InstructionRow(imageName: "surface", text: NSLocalizedString("Use a flat surface", comment: "Instruction text"))
-                InstructionRow(imageName: "light", text: NSLocalizedString("Ensure good lighting", comment: "Instruction text"))
-
-                
-                Divider()
-                
-                Button("Done") {
-                    showInstructions = false
-                }
-                .foregroundColor(Color("green"))
-                .padding(.top, 4)
+struct InstructionBox: View {
+    @Binding var showInstructions: Bool
+    
+    var body: some View {
+        VStack(spacing: 12) {
+            InstructionRow(imageName: "adjust", text: "Adjust on wide view", textColor: TextColorin)
+            InstructionRow(imageName: "arrange", text: "Arrange vegetables neatly", textColor: TextColorin)
+            InstructionRow(imageName: "surface", text: "Use a flat surface", textColor: TextColorin)
+            InstructionRow(imageName: "light", text: "Ensure good lighting", textColor: TextColorin)
+            
+            Divider()
+            
+            Button("Done") {
+                showInstructions = false
             }
-            .padding()
-            .background(Color(.systemGray6))
-            .cornerRadius(12)
-            .shadow(radius: 5)
-            .frame(width: 280)
+            .foregroundColor(Color("green"))
+            .padding(.top, 4)
+        }
+        .padding()
+        .background(Color(.systemGray6))
+        .cornerRadius(12)
+        .shadow(radius: 5)
+        .frame(width: 280)
+    }
+}
+    
+struct InstructionRow: View {
+    var imageName: String
+    var text: String
+    var textColor: Color
+
+    var body: some View {
+        HStack {
+            Image(imageName)
+                .resizable()
+                .scaledToFit()
+                .frame(width: 34.31, height: 34.31)
+            
+            Text(text)
+                .font(.system(size: 16))
+                .foregroundColor(textColor)
+            
+            Spacer()
         }
     }
-    
-    struct InstructionRow: View {
-        var imageName: String
-        var text: String
-        
-        var body: some View {
-            HStack {
-                Image(imageName)
-                    .resizable()
-                    .scaledToFit()
-                    .frame(width: 34.31, height: 34.31)
-                
-                Text(text)
-                    .font(.system(size: 16))
-                    .foregroundColor(.black)
-                
-                Spacer()
-            }
-        }
-    }
-    
-    //struct BottomNavBar: View {
-    //    @Binding var showInstructions: Bool
-    //    @Binding var selectedNavItem: String?
-    //    @Binding var showHistoryView: Bool
-    //    @Binding var itemName: String
-    //    @Binding var totalProducts: Int
-    //    @Binding var date: String
-    //    var userName: String
-    //    var capturePhotoAction: () -> Void
-    //
-    //    var body: some View {
-    //        HStack {
-    //            NavBarItem(imageName: "history", text: "History", selectedNavItem: $selectedNavItem) {
-    //                itemName = "Tomato"
-    //                totalProducts = 3
-    //                date = DateFormatter.localizedString(from: Date(), dateStyle: .medium, timeStyle: .short)
-    //
-    //                showHistoryView = true
-    //            }
-    //
-    //            NavBarItem(imageName: "counter", text: "Counter", selectedNavItem: $selectedNavItem, action: {
-    //                capturePhotoAction()
-    //            })
-    //
-    //            NavBarItem(imageName: "Instructions", text: "Instructions", selectedNavItem: $selectedNavItem) {
-    //                showInstructions = true
-    //            }
-    //        }
-    //    }
-    //}
-
-
+}
+   
 struct BottomNavBar: View {
     @Binding var showInstructions: Bool
     @Binding var selectedNavItem: String?
@@ -160,8 +128,7 @@ struct BottomNavBar: View {
     
     var body: some View {
         HStack {
-            NavBarItem(imageName: "history", text: NSLocalizedString("History", comment: "Navigation Bar Item"), selectedNavItem: $selectedNavItem)
- {
+            NavBarItem(imageName: "history", text: "History", selectedNavItem: $selectedNavItem) {
                 
                 // ✅ Fetch the latest history data BEFORE navigating
                 cloudKitHelper.fetchHistory()
@@ -183,16 +150,12 @@ struct BottomNavBar: View {
                 }
             }
 
-            NavBarItem(imageName: "count", text: NSLocalizedString("count", comment: "Navigation Bar Item"), selectedNavItem: $selectedNavItem, action: {
+            NavBarItem(imageName: "counter", text: "Counter", selectedNavItem: $selectedNavItem, action: {
                 capturePhotoAction()
             })
-
-       
             
-            NavBarItem(imageName: "Instructions", text: NSLocalizedString("Instructions", comment: "Navigation Bar Item"), selectedNavItem: $selectedNavItem) {
+            NavBarItem(imageName: "Instructions", text: "Instructions", selectedNavItem: $selectedNavItem) {
                 showInstructions = true
-            
-
             }
         }
     }
