@@ -1,14 +1,11 @@
 # Hasadak
 
 
+![4D951831-B7B0-4C0A-B4B4-81BB17E20884_1_201_a](https://github.com/user-attachments/assets/5024b538-af92-4f2e-95d0-6071f8143489)
 
 
 
-
-
-
-
-Hasadak is an intelligent application that uses artificial intelligence techniques for inventory management of vegetables and automatically calculates their quantities. The application relies on **CoreML Object Detector** to analyze images captured using the device's camera, providing accurate results about the vegetable quantity.
+**Hasadak is an intelligent application that uses artificial intelligence techniques for inventory management of vegetables and automatically calculates their quantities. The application relies on **CoreML Object Detector** to analyze images captured using the device's camera, providing accurate results about the vegetable quantity.**
 
 ## Project Contents
 
