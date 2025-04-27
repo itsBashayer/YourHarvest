@@ -5,6 +5,7 @@ struct HistoryView: View {
     @ObservedObject var cloudKitHelper: CloudKitHelper // ✅ Ensures CloudKitHelper is correctly used
     @State private var showPopup = false
     @State private var pdfURL: URL? // ✅ Stores generated PDF file
+    @State private var selectedRecord: HistoryRecord? // ✅ Stores the selected record for the popup
 
     var body: some View {
         GeometryReader { geometry in
@@ -24,6 +25,7 @@ struct HistoryView: View {
                             } else {
                                 ForEach(cloudKitHelper.historyRecords) { record in
                                     Button {
+                                        selectedRecord = record // ✅ Store the selected record
                                         generatePDF(record: record, geometry: geometry) // ✅ Generate PDF when clicking
                                         showPopup = true
                                     } label: {
@@ -48,7 +50,6 @@ struct HistoryView: View {
                                             Spacer()
 
                                             Text("\(record.totalProducts) \(NSLocalizedString("pieces", comment: ""))")
-
                                                 .font(.headline)
                                                 .foregroundColor(Color("green"))
                                                 .lineLimit(1)
@@ -77,7 +78,7 @@ struct HistoryView: View {
                 }
 
                 // ✅ Popup for viewing & sharing PDF
-                if showPopup {
+                if showPopup, let record = selectedRecord {
                     Color.black.opacity(0.4)
                         .edgesIgnoringSafeArea(.all)
                         .onTapGesture {
@@ -85,17 +86,15 @@ struct HistoryView: View {
                         }
 
                     VStack(spacing: 16) {
-                        // ✅ Display the Report Card
-                        if let record = cloudKitHelper.historyRecords.first {
-                            CutoutReportCard(
-                                itemName: record.itemName,
-                                totalProducts: record.totalProducts,
-                                date: formatDate(record.date),
-                                userName: record.userName,
-                                showShape: true,
-                                geometry: geometry
-                            )
-                        }
+                        // ✅ Display the Report Card for the selected record
+                        CutoutReportCard(
+                            itemName: record.itemName,
+                            totalProducts: record.totalProducts,
+                            date: formatDate(record.date),
+                            userName: record.userName,
+                            showShape: true,
+                            geometry: geometry
+                        )
 
                         // ✅ Share Button (Positioned Below the Popup)
                         if let pdfURL = pdfURL {
@@ -181,3 +180,4 @@ struct HistoryView_Previews: PreviewProvider {
         HistoryView(cloudKitHelper: CloudKitHelper()) // ✅ Fixed missing CloudKitHelper argument
     }
 }
+// last

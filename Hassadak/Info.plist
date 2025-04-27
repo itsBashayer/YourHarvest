@@ -14,7 +14,7 @@
 		</dict>
 	</array>
 	<key>NSCameraUsageDescription</key>
-	<string>This app requires camera access to detect objects in real-time.</string>
+	<string>This app requires camera access to capture and detect objects, then count them for easier saving of data.</string>
 	<key>FirebaseAppDelegateProxyEnabled</key>
 	<false/>
 	<key>UIBackgroundModes</key>

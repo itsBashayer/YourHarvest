@@ -31,17 +31,6 @@
         }
       }
     },
-    "%lld pieces" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "ar" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "%lld حبة"
-          }
-        }
-      }
-    },
     "1. Point the camera at the vegetables.\n2. Tap the Counter button.\n3. The app will count and display the quantity." : {
 
     },

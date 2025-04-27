@@ -70,6 +70,7 @@ struct OnboardingScreen: View {
                 if imageName == "onboarding3" {
                     TextField(NSLocalizedString("Enter your name", comment: ""), text: $userName)
                         .font(.system(size: 16))
+                        .foregroundColor(.blue)
                         .padding(10)
                         .background(Color.white.opacity(0.8))
                         .cornerRadius(10)

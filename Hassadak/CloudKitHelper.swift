@@ -19,12 +19,16 @@ class CloudKitHelper: ObservableObject {
     @Published var historyRecords: [HistoryRecord] = []
     @Published var currentUserRecordID: CKRecord.ID?
 
-    // ✅ Corrected: Init now fetches user record correctly
+    // ✅ Ensure User Record is Fetched Before Fetching History
     init() {
-        fetchUserRecordID { _ in }
+        fetchUserRecordID { recordID in
+            if recordID != nil {
+                self.fetchHistory() // ✅ Only fetch history AFTER getting user ID
+            }
+        }
     }
 
-    // ✅ Step 1: Fetch User Record ID Before Saving
+    // ✅ Step 1: Fetch User Record ID Before Fetching History
     private func fetchUserRecordID(completion: @escaping (CKRecord.ID?) -> Void) {
         container.fetchUserRecordID { recordID, error in
             DispatchQueue.main.async {
@@ -87,9 +91,19 @@ class CloudKitHelper: ObservableObject {
         }
     }
 
-
-    // ✅ Step 3: Fetch History with Correct Predicate
+    // ✅ Step 3: Fetch History After Ensuring currentUserRecordID is Set
     func fetchHistory() {
+        if currentUserRecordID == nil {
+            fetchUserRecordID { recordID in
+                guard let recordID = recordID else {
+                    print("❌ No User ID available! Cannot fetch history.")
+                    return
+                }
+                self.fetchHistory() // ✅ Retry fetching history after getting user ID
+            }
+            return
+        }
+
         guard let userID = currentUserRecordID else {
             print("❌ No User ID available! Cannot fetch history.")
             return
@@ -111,13 +125,17 @@ class CloudKitHelper: ObservableObject {
 
                 guard let records = records, !records.isEmpty else {
                     print("⚠️ No history records found in CloudKit!")
+                    self.historyRecords = []
                     return
                 }
 
+                // ✅ Ensure the stored userName is retrieved correctly
                 self.historyRecords = records.map { record in
-                    HistoryRecord(
+                    let storedUserName = record["userName"] as? String ?? "Unknown" // ✅ Ensures username is retrieved
+                    
+                    return HistoryRecord(
                         id: record.recordID,
-                        userName: record["userName"] as? String ?? "Unknown",
+                        userName: storedUserName, // ✅ Use stored username (from user input)
                         date: record["date"] as? Date ?? Date(),
                         totalProducts: record["totalProducts"] as? Int ?? 0,
                         itemName: record["itemName"] as? String ?? "No Item",
@@ -127,10 +145,9 @@ class CloudKitHelper: ObservableObject {
 
                 print("✅ Successfully fetched \(self.historyRecords.count) history records!")
                 if let latest = self.historyRecords.first {
-                    print("🆕 Latest Record: \(latest.itemName) - \(latest.totalProducts) pieces - \(latest.date)")
+                    print("🆕 Latest Record: \(latest.itemName) - \(latest.totalProducts) pieces - \(latest.date) - \(latest.userName)")
                 }
             }
         }
     }
-
 }

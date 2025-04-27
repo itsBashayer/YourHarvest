@@ -73,6 +73,7 @@ struct InstructionBox: View {
     
     var body: some View {
         VStack(spacing: 12) {
+            InstructionRow(imageName: "itemsC", text: "Currently Available: 🍏🍅🥒🍋", textColor: TextColorin)
             InstructionRow(imageName: "adjust", text: "Adjust on wide view", textColor: TextColorin)
             InstructionRow(imageName: "arrange", text: "Arrange vegetables neatly", textColor: TextColorin)
             InstructionRow(imageName: "surface", text: "Use a flat surface", textColor: TextColorin)
@@ -90,7 +91,7 @@ struct InstructionBox: View {
         .background(Color(.systemGray6))
         .cornerRadius(12)
         .shadow(radius: 5)
-        .frame(width: 280)
+        .frame(width: 319)
     }
 }
     
