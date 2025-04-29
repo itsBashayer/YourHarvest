@@ -5,11 +5,11 @@
 
 
 
-**Hasadak is an intelligent application that uses artificial intelligence techniques for inventory management of vegetables and automatically calculates their quantities. The application relies on **CoreML Object Detector** to analyze images captured using the device's camera, providing accurate results about the vegetable quantity.**
+**YourHarvest is an intelligent application that uses artificial intelligence techniques for inventory management of vegetables and automatically calculates their quantities. The application relies on **CoreML Object Detector** to analyze images captured using the device's camera, providing accurate results about the vegetable quantity.**
 
 ## 🌍 Multilingual Support
 
-Hasadak supports three languages to ensure accessibility for a wider range of users:
+YourHarvest supports three languages to ensure accessibility for a wider range of users:
 - 🇸🇦 **Arabic**
 - 🇺🇸 **English**
 - 🇮🇳 **Hindi**
